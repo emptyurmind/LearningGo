@@ -11,6 +11,7 @@ func main() {
 	fmt.Println(insertionSort(arr))
 	fmt.Println(shellSort(arr))
 	fmt.Println(mergeSort(arr))
+	fmt.Println(quickSort(arr))
 }
 
 // 冒泡排序
@@ -116,4 +117,34 @@ func merge(left, right []int) []int {
 		right = right[1:]
 	}
 	return res
+}
+
+func quickSort(arr []int) []int {
+	// 快速排序使用分治法（Divide and conquer）策略来把一个串行（list）分为两个子串行（sub-lists）
+	// 快速排序的最坏运行情况是 O(n²)，比如说顺序数列的快排。但它的平摊期望时间是 O(nlogn)，
+	// 且 O(nlogn) 记号中隐含的常数因子很小，比复杂度稳定等于 O(nlogn) 的归并排序要小很多。所以，对绝大多数顺序性较弱的随机数列而言，快速排序总是优于归并排序。
+	return quick(arr, 0, len(arr)-1)
+}
+
+func quick(arr []int, left int, right int) []int {
+	if left < right {
+		partition := partition(arr, left, right)
+		quick(arr, left, partition-1)
+		quick(arr, partition+1, right)
+	}
+	return arr
+}
+
+func partition(arr []int, left, right int) int {
+	// 选定一个pivot，然后以他为中心轴，移动元素到之前或之后
+	pivot := left
+	idx := pivot + 1
+	for i := idx; i < right; i++ {
+		if arr[i] < arr[pivot] {
+			arr[i], arr[idx] = arr[idx], arr[i]
+			idx++
+		}
+	}
+	arr[pivot], arr[idx-1] = arr[idx-1], arr[pivot]
+	return idx - 1
 }

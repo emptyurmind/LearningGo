@@ -12,6 +12,7 @@ func main() {
 	fmt.Println(shellSort(arr))
 	fmt.Println(mergeSort(arr))
 	fmt.Println(quickSort(arr))
+	fmt.Println(heapSort(arr))
 }
 
 // 冒泡排序
@@ -147,4 +148,55 @@ func partition(arr []int, left, right int) int {
 	}
 	arr[pivot], arr[idx-1] = arr[idx-1], arr[pivot]
 	return idx - 1
+}
+
+func heapSort(arr []int) []int {
+	// 一般用数组来表示堆，下标为 i 的结点的父结点下标为(i-1)/2；其左右子结点分别为 (2i + 1)、(2i + 2)
+	// ① 最大堆调整（Max_Heapify）：将堆的末端子节点作调整，使得子节点永远小于父节点
+	// ② 创建最大堆（Build_Max_Heap）：将堆所有数据重新排序
+	// ③ 堆排序（HeapSort）：移除位在第一个数据的根节点，并做最大堆调整的递归运算
+
+	// ① 先将初始的R[0…n-1]建立成最大堆，此时是无序堆，而堆顶是最大元素。
+	// ② 再将堆顶R[0]和无序区的最后一个记录R[n-1]交换，由此得到新的无序区R[0…n-2]和有序区R[n-1]，且满足R[0…n-2].keys ≤ R[n-1].key
+	// ③ 由于交换后新的根R[1]可能违反堆性质，故应将当前无序区R[1..n-1]调整为堆。然后再次将R[1..n-1]中关键字最大的记录R[1]和该区间的最后一个记录R[n-1]交换，由此得到新的无序区R[1..n-2]和有序区R[n-1..n]，且仍满足关系R[1..n-2].keys≤R[n-1..n].keys，同样要将R[1..n-2]调整为堆。
+	// ④ 直到无序区只有一个元素为止。
+
+	arrLen := len(arr)
+	buildMaxHeap(arr, arrLen)
+	fmt.Printf("arr's content is %d\n", arr)
+	for i := arrLen - 1; i >= 0; i-- {
+		// 对堆化数组排序，移除根节点，遍历长度-1
+		swap(arr, 0, i)
+		arrLen -= 1
+		heapify(arr, 0, arrLen)
+	}
+	return arr
+}
+
+func buildMaxHeap(arr []int, arrLen int) {
+	// 将数组堆化
+	// 注意：这里只是堆化，堆化不代表整个堆已经是有序的了，只是符合大根堆/小根堆的性质
+	for i := arrLen / 2; i >= 0; i-- {
+		heapify(arr, i, arrLen)
+	}
+}
+
+func heapify(arr []int, i, arrLen int) {
+	left := 2*i + 1
+	right := 2*i + 2
+	largest := i
+	if left < arrLen && arr[left] > arr[largest] {
+		largest = left
+	}
+	if right < arrLen && arr[right] > arr[largest] {
+		largest = right
+	}
+	if largest != i {
+		swap(arr, i, largest)
+		heapify(arr, largest, arrLen)
+	}
+}
+
+func swap(arr []int, i, j int) {
+	arr[i], arr[j] = arr[j], arr[i]
 }

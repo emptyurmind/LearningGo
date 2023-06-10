@@ -16,6 +16,7 @@ func main() {
 	fmt.Println(heapSort(arr))
 	fmt.Println(countingSort(arr))
 	fmt.Println(bucketSort(arr))
+	fmt.Println(radixSort(arr))
 }
 
 // 冒泡排序
@@ -265,4 +266,54 @@ func bucketSort(arr []int) []int {
 		}
 	}
 	return res
+}
+
+func radixSort(arr []int) []int {
+	// 基数排序是一种非比较型整数排序算法，其原理是将整数按位数切割成不同的数字，然后按每个位数分别比较。
+	// 由于整数也可以表达字符串（比如名字或日期）和特定格式的浮点数，所以基数排序也不是只能使用于整数
+	// 计算最长的数字
+	var (
+		maxVal int
+		maxLen int
+	)
+	for _, v := range arr {
+		if maxVal < v {
+			maxVal = v
+		}
+	}
+	for maxVal > 0 {
+		maxLen++
+		maxVal /= 10
+	}
+
+	// 循环进行数据分配与回归
+	var (
+		base    = 1           // 取余基数，初始是1，用于取出每个元素的倒数第 i+1 位的值，计算公式：v / base %10
+		buckets = [10][]int{} // 基数桶，10个
+	)
+	for i := 0; i < maxLen; i++ { // 遍历位
+		for _, v := range arr { // 遍历数组
+			d := v / base % 10                 // 每个数字当前位值
+			buckets[d] = append(buckets[d], v) // 存入对应桶中
+		}
+
+		// 将桶中元素还原到arr
+		idx := 0
+		for x, bucket := range buckets {
+			if len(bucket) == 0 {
+				continue
+			}
+
+			for _, v := range bucket {
+				arr[idx] = v
+				idx++
+			}
+
+			// 桶清空
+			buckets[x] = []int{}
+		}
+
+		base *= 10 // 基数*10
+	}
+	return arr
 }

@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	arr := []int{4, 9, 8, 3, 10, 1, 5, 7, 2, 6}
@@ -8,6 +10,7 @@ func main() {
 	fmt.Println(selectionSort(arr))
 	fmt.Println(insertionSort(arr))
 	fmt.Println(shellSort(arr))
+	fmt.Println(mergeSort(arr))
 }
 
 // 冒泡排序
@@ -77,4 +80,40 @@ func shellSort(arr []int) []int {
 		gap = gap / 3
 	}
 	return arr
+}
+
+func mergeSort(arr []int) []int {
+	// 分治
+	length := len(arr)
+	if length < 2 {
+		return arr
+	}
+	middle := length / 2
+	left := arr[:middle]
+	right := arr[middle:]
+	return merge(mergeSort(left), mergeSort(right))
+}
+
+func merge(left, right []int) []int {
+	var res []int
+	for len(left) != 0 && len(right) != 0 {
+		// 合并两个有序数组
+		if left[0] < right[0] {
+			res = append(res, left[0])
+			left = left[1:]
+		} else {
+			res = append(res, right[0])
+			right = right[1:]
+		}
+	}
+	// 处理剩余的
+	for len(left) != 0 {
+		res = append(res, left[0])
+		left = left[1:]
+	}
+	for len(right) != 0 {
+		res = append(res, right[0])
+		right = right[1:]
+	}
+	return res
 }

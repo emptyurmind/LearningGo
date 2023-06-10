@@ -15,6 +15,7 @@ func main() {
 	fmt.Println(quickSort(arr))
 	fmt.Println(heapSort(arr))
 	fmt.Println(countingSort(arr))
+	fmt.Println(bucketSort(arr))
 }
 
 // 冒泡排序
@@ -234,4 +235,34 @@ func countingSort(arr []int) []int {
 	}
 
 	return arr
+}
+
+func bucketSort(arr []int) []int {
+	// 桶排序是计数排序的升级版。它利用了函数的映射关系，高效与否的关键就在于这个映射函数的确定
+	buckets := make([][]int, 5)
+	res := make([]int, 0)
+	fmt.Printf("buckets's size is %d\n", len(buckets))
+	for i := range buckets {
+		buckets[i] = make([]int, 0)
+	}
+	min := math.MaxInt
+	max := math.MinInt
+	for _, val := range arr {
+		if val < min {
+			min = val
+		} else if val > max {
+			max = val
+		}
+	}
+	for _, val := range arr {
+		idx := int(math.Floor(float64(val-min)) / float64(len(buckets)))
+		buckets[idx] = append(buckets[idx], val)
+	}
+	for _, bucket := range buckets {
+		insertionSort(bucket)
+		for _, val := range bucket {
+			res = append(res, val)
+		}
+	}
+	return res
 }
